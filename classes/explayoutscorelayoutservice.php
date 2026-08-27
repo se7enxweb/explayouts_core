@@ -151,9 +151,13 @@ class expLayoutsCoreLayoutService
             return $this->loadPublished( (int)$draft->attribute( 'id' ) );
 
         $identifier = (string)$draft->attribute( 'identifier' );
-        $this->delete( (int)$draft->attribute( 'id' ) );
+        $published = $this->loadByIdentifier( $identifier, 2 );
 
-        return $this->loadByIdentifier( $identifier, 2 );
+        if ( !$published )
+            return $draft;
+
+        $this->delete( (int)$draft->attribute( 'id' ) );
+        return $published;
     }
 
     public function copy( $id )
