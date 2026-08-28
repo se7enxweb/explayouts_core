@@ -51,7 +51,16 @@ class expLayoutsCoreLayoutService
 
     public function create( $identifier, $name = '', $layoutType = '' )
     {
-        $layout = expLayoutsLayout::create( trim( $identifier ) );
+        $identifier = trim( $identifier );
+        $baseIdentifier = $identifier !== '' ? $identifier : 'layout';
+        $uniqueIdentifier = $baseIdentifier;
+        $counter = 2;
+        while ( expLayoutsLayout::fetchByIdentifier( $uniqueIdentifier, 1 ) !== false )
+        {
+            $uniqueIdentifier = $baseIdentifier . '_' . $counter++;
+        }
+
+        $layout = expLayoutsLayout::create( $uniqueIdentifier );
         $layout->setAttribute( 'name', trim( $name ) );
         $layout->setAttribute( 'layout_type', trim( $layoutType ) );
         $layout->setAttribute( 'created', time() );
