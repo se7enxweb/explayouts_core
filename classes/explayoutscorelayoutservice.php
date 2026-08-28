@@ -88,7 +88,7 @@ class expLayoutsCoreLayoutService
 
     public function publish( $id )
     {
-        $draft = $this->load( (int)$id );
+        $draft = $this->loadDraft( (int)$id );
         if ( !$draft )
             return false;
 
