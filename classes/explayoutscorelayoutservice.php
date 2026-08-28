@@ -184,6 +184,10 @@ class expLayoutsCoreLayoutService
         if ( !$layout )
             return false;
 
+        // Disable any rules tied to this layout so a removed layout does not
+        // leave the resolver matching a path to a non-existent layout.
+        eZDB::instance()->query( 'UPDATE explayouts_rule SET enabled = 0 WHERE layout_id = ' . (int)$id );
+
         $this->clearLayoutContent( $layout );
         $layout->remove();
         return true;
