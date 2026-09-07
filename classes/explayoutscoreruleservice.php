@@ -20,9 +20,13 @@ class expLayoutsCoreRuleService
         );
     }
 
-    public function create( $layoutId, $priority = 0, $enabled = 1 )
+    /**
+     * $priority null lets expLayoutsRule::create() place the rule above every
+     * existing one, so a newly mapped layout is not shadowed by the catch-all.
+     */
+    public function create( $layoutId, $priority = null, $enabled = 1 )
     {
-        $rule = expLayoutsRule::create( (int)$layoutId, (int)$priority );
+        $rule = expLayoutsRule::create( (int)$layoutId, $priority === null ? null : (int)$priority );
         $rule->setAttribute( 'enabled', $enabled ? 1 : 0 );
         $rule->store();
         return $rule;
