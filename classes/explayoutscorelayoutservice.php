@@ -49,7 +49,7 @@ class expLayoutsCoreLayoutService
         return array_values( $byIdentifier );
     }
 
-    public function create( $identifier, $name = '', $layoutType = '' )
+    public function create( $identifier, $name = '', $layoutType = '', $shared = false )
     {
         $identifier = trim( $identifier );
         $baseIdentifier = $identifier !== '' ? $identifier : 'layout';
@@ -63,6 +63,7 @@ class expLayoutsCoreLayoutService
         $layout = expLayoutsLayout::create( $uniqueIdentifier );
         $layout->setAttribute( 'name', trim( $name ) );
         $layout->setAttribute( 'layout_type', trim( $layoutType ) );
+        $layout->setAttribute( 'shared', $shared ? 1 : 0 );
         $layout->setAttribute( 'created', time() );
         $layout->setAttribute( 'modified', time() );
         $layout->store();
@@ -89,6 +90,8 @@ class expLayoutsCoreLayoutService
         {
             if ( in_array( $key, array( 'identifier', 'name', 'layout_type', 'status' ) ) )
                 $layout->setAttribute( $key, $value );
+            elseif ( $key === 'shared' )
+                $layout->setAttribute( 'shared', $value ? 1 : 0 );
         }
         $layout->setAttribute( 'modified', time() );
         $layout->store();
@@ -112,6 +115,7 @@ class expLayoutsCoreLayoutService
 
         $published->setAttribute( 'name', (string)$draft->attribute( 'name' ) );
         $published->setAttribute( 'layout_type', (string)$draft->attribute( 'layout_type' ) );
+        $published->setAttribute( 'shared', (int)$draft->attribute( 'shared' ) );
         $published->setAttribute( 'status', 2 );
         $published->setAttribute( 'modified', time() );
         $published->store();
@@ -141,6 +145,7 @@ class expLayoutsCoreLayoutService
 
         $draft = expLayoutsLayout::create( $identifier, (string)$published->attribute( 'name' ), (string)$published->attribute( 'layout_type' ) );
         $draft->setAttribute( 'status', 1 );
+        $draft->setAttribute( 'shared', (int)$published->attribute( 'shared' ) );
         $draft->setAttribute( 'created', (int)$published->attribute( 'created' ) );
         $draft->setAttribute( 'modified', time() );
         $draft->store();
@@ -179,7 +184,8 @@ class expLayoutsCoreLayoutService
         $copy = $this->create(
             $newIdentifier,
             (string)$source->attribute( 'name' ) . ' (copy)',
-            (string)$source->attribute( 'layout_type' )
+            (string)$source->attribute( 'layout_type' ),
+            (int)$source->attribute( 'shared' ) === 1
         );
 
         $this->copyLayoutContent( $source, $copy );
@@ -196,6 +202,11 @@ class expLayoutsCoreLayoutService
         // Disable any rules tied to this layout so a removed layout does not
         // leave the resolver matching a path to a non-existent layout.
         eZDB::instance()->query( 'UPDATE explayouts_rule SET enabled = 0 WHERE layout_id = ' . (int)$id );
+
+        // Same reasoning for zones that inherit their blocks from this one:
+        // a link to a layout that is gone renders as nothing at all, and the
+        // editor would draw the zone as locked with no way to unlock it.
+        eZDB::instance()->query( 'UPDATE explayouts_zone SET linked_layout_id = NULL, linked_zone_identifier = NULL WHERE linked_layout_id = ' . (int)$id );
 
         $this->clearLayoutContent( $layout );
         $layout->remove();
@@ -272,7 +283,10 @@ class expLayoutsCoreLayoutService
 
             $linkedLayoutId = $zone->attribute( 'linked_layout_id' );
             if ( $linkedLayoutId !== null && $linkedLayoutId !== false && (int)$linkedLayoutId > 0 )
+            {
                 $newZone->setAttribute( 'linked_layout_id', (int)$linkedLayoutId );
+                $newZone->setAttribute( 'linked_zone_identifier', $zone->attribute( 'linked_zone_identifier' ) );
+            }
 
             $newZone->store();
 
