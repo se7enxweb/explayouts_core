@@ -13,7 +13,7 @@ class explayouts_coreInfo
 {
     public static function info()
     {
-        return array( 'Name' => "explayouts_core",
+        return array( 'Name' => "Exponential Layouts Core",
                       'Version' => "1.0.3",
                       'Copyright' => "Copyright (C) 1998 - 2026 7x. All rights reserved.",
                       'License' => "GNU General Public License v2.0 (or any later version)",
