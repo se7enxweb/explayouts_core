@@ -2,6 +2,17 @@
 
 class expLayoutsCoreRuleService
 {
+    /**
+     * Admin layouts are cached per module/view and generation (see
+     * expLayoutsResolver::adminCacheKey()); a publish or a rule change must
+     * make every cached answer stop being found.
+     */
+    protected function clearResolverCache()
+    {
+        if ( class_exists( 'expLayoutsResolver' ) && method_exists( 'expLayoutsResolver', 'clearCache' ) )
+            expLayoutsResolver::clearCache();
+    }
+
     public function load( $ruleId )
     {
         return expLayoutsRule::fetch( (int)$ruleId );
@@ -26,6 +37,13 @@ class expLayoutsCoreRuleService
      */
     public function create( $layoutId, $priority = null, $enabled = 1 )
     {
+        $result = $this->createUncleared( $layoutId, $priority, $enabled );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function createUncleared( $layoutId, $priority = null, $enabled = 1 )
+    {
         $rule = expLayoutsRule::create( (int)$layoutId, $priority === null ? null : (int)$priority );
         $rule->setAttribute( 'enabled', $enabled ? 1 : 0 );
         $rule->store();
@@ -33,6 +51,13 @@ class expLayoutsCoreRuleService
     }
 
     public function update( $ruleId, $attributes )
+    {
+        $result = $this->updateUncleared( $ruleId, $attributes );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function updateUncleared( $ruleId, $attributes )
     {
         $rule = $this->load( (int)$ruleId );
         if ( !$rule )
@@ -48,6 +73,13 @@ class expLayoutsCoreRuleService
     }
 
     public function setTargets( $ruleId, $targets )
+    {
+        $result = $this->setTargetsUncleared( $ruleId, $targets );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function setTargetsUncleared( $ruleId, $targets )
     {
         $rule = $this->load( (int)$ruleId );
         if ( !$rule )
@@ -73,6 +105,13 @@ class expLayoutsCoreRuleService
     }
 
     public function setConditions( $ruleId, $conditions )
+    {
+        $result = $this->setConditionsUncleared( $ruleId, $conditions );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function setConditionsUncleared( $ruleId, $conditions )
     {
         $rule = $this->load( (int)$ruleId );
         if ( !$rule )
@@ -129,6 +168,13 @@ class expLayoutsCoreRuleService
     }
 
     public function delete( $ruleId )
+    {
+        $result = $this->deleteUncleared( $ruleId );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function deleteUncleared( $ruleId )
     {
         $rule = $this->load( (int)$ruleId );
         if ( !$rule )

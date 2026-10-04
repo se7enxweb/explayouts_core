@@ -2,6 +2,17 @@
 
 class expLayoutsCoreLayoutService
 {
+    /**
+     * Admin layouts are cached per module/view and generation (see
+     * expLayoutsResolver::adminCacheKey()); a publish or a rule change must
+     * make every cached answer stop being found.
+     */
+    protected function clearResolverCache()
+    {
+        if ( class_exists( 'expLayoutsResolver' ) && method_exists( 'expLayoutsResolver', 'clearCache' ) )
+            expLayoutsResolver::clearCache();
+    }
+
     public function load( $id, $status = null )
     {
         return expLayoutsLayout::fetch( (int)$id );
@@ -100,6 +111,13 @@ class expLayoutsCoreLayoutService
 
     public function publish( $id )
     {
+        $result = $this->publishUncleared( $id );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function publishUncleared( $id )
+    {
         $draft = $this->loadDraft( (int)$id );
         if ( !$draft )
             return false;
@@ -194,6 +212,13 @@ class expLayoutsCoreLayoutService
     }
 
     public function delete( $id )
+    {
+        $result = $this->deleteUncleared( $id );
+        $this->clearResolverCache();
+        return $result;
+    }
+
+    protected function deleteUncleared( $id )
     {
         $layout = $this->load( (int)$id );
         if ( !$layout )
