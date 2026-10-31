@@ -1,6 +1,6 @@
 {
     "name": "se7enxweb/explayouts-core",
-    "description": "Core domain layer for the Netgen Layouts port to Exponential CMS.",
+    "description": "Core domain layer of Exponential Layouts for Exponential CMS.",
     "type": "ezpublish-legacy-extension",
     "homepage": "https://se7enx.com",
     "license": "GPL-2.0-or-later",
