@@ -104,7 +104,9 @@ try
         if ( $apiClass && method_exists( $apiClass, 'findZoneByIdentifier' ) )
         {
             $method = new ReflectionMethod( $apiClass, 'findZoneByIdentifier' );
-            $method->setAccessible( true );
+            // PHP 8.0 needs it for a non-public member, 8.1+ does not (and 8.5 deprecates it)
+            if ( PHP_VERSION_ID < 80100 )
+                $method->setAccessible( true );
             return $method->invoke( null, (int)$layoutId, $identifier, (int)$status );
         }
         foreach ( expLayoutsZone::fetchByLayout( (int)$layoutId, null ) as $zone )
