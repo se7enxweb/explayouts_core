@@ -11,6 +11,9 @@ class expLayoutsCoreRuleService
     {
         if ( class_exists( 'expLayoutsResolver' ) && method_exists( 'expLayoutsResolver', 'clearCache' ) )
             expLayoutsResolver::clearCache();
+        // a rule decides which layout a page gets: layouts kept in a {cache-block} expire with it
+        if ( class_exists( 'eZContentObject' ) )
+            eZContentObject::expireTemplateBlockCache();
     }
 
     public function load( $ruleId )

@@ -11,6 +11,10 @@ class expLayoutsCoreLayoutService
     {
         if ( class_exists( 'expLayoutsResolver' ) && method_exists( 'expLayoutsResolver', 'clearCache' ) )
             expLayoutsResolver::clearCache();
+        // a pagelayout may keep the rendered layout in a {cache-block}: a published or deleted layout expires them
+        // as a content publish does
+        if ( class_exists( 'eZContentObject' ) )
+            eZContentObject::expireTemplateBlockCache();
     }
 
     public function load( $id, $status = null )
