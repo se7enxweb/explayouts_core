@@ -119,6 +119,9 @@ class TransferDiffTest extends TestCase
         $this->assertSame( array(), $plan['rules'] );
     }
 
+    /**
+     * @dataProvider actions
+     */
     #[\PHPUnit\Framework\Attributes\DataProvider( 'actions' )]
     public function testTheStrategyGivesTheAction( $state, $kind, $dependency, $strategy, array $perItem, $expected )
     {
