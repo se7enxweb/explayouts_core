@@ -120,4 +120,10 @@ Tests
 - `php bin/php/ezexec.php extension/explayouts_core/tests/explayoutscoretransferroundtriptest.php`: copies the site's
   layout tables into a throwaway SQLite database, exports everything, imports it into a fresh one with other node and
   object ids, compares both row by row by natural key, then checks a dry run (all identical), a copy, an overwrite, a
-  rollback and unmapped references. The site's database is only read.
+  rollback and unmapped references. The site's database is only read. It ends with exit code 0 when every check
+  passes and 1 when one fails (ezexec gives 1 for any return value of a script other than 1, so the script returns 1
+  for a pass), so a shell or CI step can rely on it.
+
+The PHPUnit tests carry their metadata both as docblock annotations and as attributes: they run under PHPUnit 9, the
+last PHPUnit for PHP 8.0, as under PHPUnit 10 and later. The configuration names no cache directory, so PHPUnit 9 reads
+it without a warning.

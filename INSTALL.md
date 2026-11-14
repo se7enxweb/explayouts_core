@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Exponential Legacy / Exponential 6, PHP 8.1+
+- Exponential Legacy / Exponential 6, PHP 8.0+
 - `extension/explayouts` installed with its `explayouts_*` database schema (this extension only provides services on top of it)
 
 ## 1. Put the extension in place

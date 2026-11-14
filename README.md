@@ -81,10 +81,10 @@ Requirements
 The following requirements exists for using the Exponential Layouts Core extension:
 
 Exponential version
-- Make sure you use Exponential 6 / eZ Publish Legacy (required) or higher.
+- Make sure you use Exponential 6 / Exponential Legacy (required) or higher.
 
 PHP version
-- Make sure you have PHP 8.1 or higher.
+- Make sure you have PHP 8.0 or higher.
 
 Sibling extensions
 - Required: `extension/explayouts` installed with its `explayouts_*` database schema — this extension only provides services on top of it (value objects and database tables).
